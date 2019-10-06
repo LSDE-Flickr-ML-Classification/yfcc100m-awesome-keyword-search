@@ -1,17 +1,27 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h1>YFCC100M Awesome Keyword Search</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <SearchBar/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import SearchBar from './components/SearchBar.vue'
 
 export default {
   name: 'app',
   components: {
-    HelloWorld
+    SearchBar
   }
 }
 </script>
