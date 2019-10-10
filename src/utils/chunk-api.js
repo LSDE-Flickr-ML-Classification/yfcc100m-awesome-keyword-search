@@ -14,10 +14,10 @@ export default class ChunkAPI {
     }
 
     async fetch_inverted_list() {
-        return await this._http.get(`yfcc100m-tags/inverted_list.json`)
+        return await this._http.get(`data/inverted_list.json`)
     }
 
     async get (chunk_id) {
-        return await this._http.get(`yfcc100m-tags/${chunk_id}.json`)
+        return await this._http.get(`data/${chunk_id}.json`)
     }
 }
