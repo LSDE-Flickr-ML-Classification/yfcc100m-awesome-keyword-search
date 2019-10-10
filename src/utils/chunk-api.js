@@ -7,23 +7,17 @@ export default class ChunkAPI {
 
     _http
     constructor (url) {
-        console.log(url)
         this._http = axios.create({
             baseURL: url,
             headers: { 'Content-Type': 'application/json' }
         })
     }
 
-    async exists (tag) {
-        return await this._http.get(`yfcc100m-tags/${tag}/index.json`)
+    async fetch_inverted_list() {
+        return await this._http.get(`yfcc100m-tags/inverted_list.json`)
     }
-    async get (tag, chunk_id) {
-        console.log(tag)
-        console.log(chunk_id)
-        return await this._http.get(`yfcc100m-tags/${tag}/${chunk_id}.json`)
+
+    async get (chunk_id) {
+        return await this._http.get(`yfcc100m-tags/${chunk_id}.json`)
     }
 }
-
-// export default new ChunkAPI( {
-//     url: "./" //env('API_URL')  // We assume 'https://api.example.com/v1' is set as the env variable
-// })

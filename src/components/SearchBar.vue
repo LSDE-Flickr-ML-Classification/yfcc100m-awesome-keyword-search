@@ -1,10 +1,9 @@
 <template>
     <div class="search-bar">
-        <div class="container">
+        <div v-if="inverted_list.data != null" class="container">
             <div class="row">
                 <div class="col-8 text-left">
-                    <input class="form-control" type="text" placeholder="Type Your Keywords" v-model="keyword_string">
-                    <small>Currently only first keyword searched</small>
+                    <input class="form-control" type="text" placeholder="Type Your Keywords" v-model="keyword_string" @keyup.enter="search">
                 </div>
                 <div class="col-4 text-left">
                     <div v-on:click="search" class="btn btn-primary">
@@ -21,7 +20,8 @@
                 <div class="col-12">
                     <ul id="result-box">
                         <li v-for="item in flickrImageItems">
-                            {{ item.title }}
+                            {{ item.title }} ({{item.confidence}})
+                            <a :href="item.flickr_url">flickr</a>
                         </li>
                     </ul>
                 </div>
@@ -31,6 +31,9 @@
                     <div v-on:click="load_more" class="btn btn-sm btn-secondary">Load more...</div>
                 </div>
             </div>
+        </div>
+        <div v-else>
+            <b-spinner type="grow" label="Loading..."></b-spinner>
         </div>
     </div>
 </template>
@@ -50,57 +53,60 @@
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 1,
-                message: null
+                message: null,
+                inverted_list : {}
             }
         },
         created: function () {
             // some init stuff?
+            this.chunkApi.fetch_inverted_list().then( (inverted_list) => {
+                this.inverted_list = inverted_list;
+            })
         },
         methods: {
-            fetch (keyword, page_index) {
+            fetch (keyword) {
                 window.console.log(`fetching for ${keyword}`);
-                let jsonResult = this.chunkApi.get(keyword, page_index);
+                let jsonResult = this.chunkApi.get(keyword);
                 return jsonResult;
             },
             process_chunk(chunk, keyword) {
                 chunk.then((resp) => {
-                    let resultArray = resp.data.result;
+                    let resultArray = resp.data;
                     // preprocess the flickr results:
-                    let flickrItems = resultArray.map((value, index, array) => {
-                        // currently no preprocessing done -> maybe we have to 🤔
-                        return value;
-                    })
 
-                    this.flickrImageItems = flickrItems;
+                    this.flickrImageItems = resultArray;
 
                     window.console.log(resultArray);
                 }).catch(() => {
-                    let checkExists = this.chunkApi.exists(keyword);
-                    checkExists.then(() => {
-                        this.message = "no more results to load";
-                    }).catch(() => {
-                        this.message = "tag does not exist";
-                        this.flickrImageItems = [];
-                    })
+                    // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
-            load_more(event) {
+            load_more() {
                 this.page_index += 1;
                 this.query();
             },
-            search(event) {
+            search() {
+
+                let keyword = this.keyword_string;
+
                 window.console.log("search clicked");
 
-                this.page_index = 1;
-                this.message = null;
-                this.flickrImageItems = [];
-                this.query();
+                if (!this.inverted_list.data.hasOwnProperty(keyword)) {
+                    // TODO: Feedback that item not exists
+                } else {
+                    this.page_index = 1;
+                    this.message = null;
+                    this.flickrImageItems = [];
+                    this.query();
+                }
+
             },
             query() {
-                let keywords = this.keyword_string.split(' ');
+                let keyword = this.keyword_string;
+                let chunk_id = this.inverted_list.data[keyword][0];
                 // currently only use first keyword:
-                let chunk = this.fetch(keywords[0], this.page_index);
-                this.process_chunk(chunk, keywords[0])
+                let chunk = this.fetch(chunk_id);
+                this.process_chunk(chunk, keyword)
 
                 return;
             }
