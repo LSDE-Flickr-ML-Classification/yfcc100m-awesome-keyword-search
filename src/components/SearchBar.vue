@@ -2,12 +2,11 @@
     <div class="search-bar">
         <div v-if="inverted_list.data != null" class="container">
             <div class="row">
-                <div class="col-8 text-left">
-                    <input class="form-control" type="text" placeholder="Type Your Keywords" v-model="keyword_string" @keyup.enter="search">
-                </div>
-                <div class="col-4 text-left">
-                    <div v-on:click="search" class="btn btn-primary">
-                        Search
+
+                <div class="input-group mb-3 col-12">
+                    <input v-model="keyword_string" @keyup.enter="search" type="text" class="form-control" placeholder="Type keyword..." aria-label="Keyword Search" aria-describedby="button-add">
+                    <div class="input-group-append">
+                        <button v-on:click="search" class="btn btn-primary" type="button" id="button-add">Search</button>
                     </div>
                 </div>
             </div>
@@ -18,12 +17,20 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <ul id="result-box">
-                        <li v-for="item in flickrImageItems">
-                            {{ item.title }} ({{item.confidence}})
-                            <a :href="item.flickr_url">flickr</a>
-                        </li>
-                    </ul>
+                    <div id="result-box" class="row">
+                        <div v-for="item in flickrImageItems" class="card" style="width: 18rem;">
+                            <a :id="`popover-target-${item.image_id}`" target="_blank" :href="item.flickr_url">
+                                <div class="hover-container">
+                                    <img class="card-img-top-contain overlay" :src="item.image_url">
+                                    <img  class="card-img-top" :src="item.image_url">
+                                </div>
+                            </a>
+                            <b-popover :target="`popover-target-${item.image_id}`" triggers="hover" placement="top">
+                                <template v-slot:title>{{item.title}}</template>
+                                <small>Confidence {{item.confidence}}</small>
+                            </b-popover>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div v-if="flickrImageItems.length > 0 && !message" class="row">
@@ -49,7 +56,7 @@
         },
         data: function () {
             return {
-                keyword_string: "cat",
+                keyword_string: "park_bench",
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 1,
@@ -61,6 +68,7 @@
             // some init stuff?
             this.chunkApi.fetch_inverted_list().then( (inverted_list) => {
                 this.inverted_list = inverted_list;
+                this.search();
             })
         },
         methods: {
@@ -117,5 +125,28 @@
 <style scoped>
     h3 {
         margin: 40px 0 0;
+    }
+
+    .card-img-top {
+        width: 100%;
+        height: 15vw;
+        object-fit: cover;
+    }
+
+    .card-img-top-contain {
+        width: 100%;
+        height: 15vw;
+        object-fit: contain;
+    }
+    .overlay {
+        display: none;
+    }
+    .hover-container:hover .overlay {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
+        background: radial-gradient(transparent, #FFFFFF);
     }
 </style>
