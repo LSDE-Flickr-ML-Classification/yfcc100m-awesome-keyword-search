@@ -11,9 +11,9 @@
                     </div>
                 </div>
             </div>
-            <div v-if="true" class="row mt-4 mb-4">
+            <div v-if="canLoadMore" class="row mt-4 mb-4">
                 <div class="col-12">
-                    <div v-on:click="load_more" class="btn btn-sm btn-secondary">Load more...</div>
+                    <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next page</div>
                 </div>
             </div>
         </div>
@@ -44,6 +44,7 @@
                 keyword_list: [ "park bench"],
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
+                page_index: 0
             }
         },
         created: function () {
@@ -74,6 +75,11 @@
             },
             load_more() {
                 // TODO: Implement
+                this.page_index += 1;
+                this.query();
+            },
+            canLoadMore() {
+                return this.inverted_list[this.keyword_list[0]].length - 1 > this.page_index + 1;
             },
             search(event) {
                 this.keyword_list = event.keyword_list
@@ -81,7 +87,7 @@
                 if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
                     // TODO: Feedback that item not exists
                 } else {
-                    this.page_index = 1;
+                    this.page_index = 0;
                     this.message = null;
                     this.flickrImageItems = [];
                     this.query();
@@ -89,7 +95,7 @@
             },
             query() {
                 let keyword = this.keyword_list[0];
-                let chunk_id = this.inverted_list[keyword][0];
+                let chunk_id = this.inverted_list[keyword][this.page_index];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
