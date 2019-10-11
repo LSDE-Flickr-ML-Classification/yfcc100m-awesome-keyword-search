@@ -2,7 +2,7 @@
     <div class="search-bar">
         <div v-if="loaded_search_data" class="container">
             <div class="row">
-                <ImageSearchBar v-on:searchTriggered="search"></ImageSearchBar>
+                <ImageSearchBar v-bind:availableKeywords="available_keywords" v-on:searchTriggered="search"></ImageSearchBar>
             </div>
             <div class="row">
                 <div class="col-12">
