@@ -2,7 +2,6 @@
     <div class="search-bar">
         <div v-if="inverted_list.data != null" class="container">
             <div class="row">
-
                 <div class="input-group mb-3 col-12">
                     <input v-model="keyword_string" @keyup.enter="search" type="text" class="form-control" placeholder="Type keyword..." aria-label="Keyword Search" aria-describedby="button-add">
                     <div class="input-group-append">
@@ -18,18 +17,7 @@
             <div class="row">
                 <div class="col-12">
                     <div id="result-box" class="row">
-                        <div v-for="item in flickrImageItems" class="card" style="width: 18rem;">
-                            <a :id="`popover-target-${item.image_id}`" target="_blank" :href="item.flickr_url">
-                                <div class="hover-container">
-                                    <img class="card-img-top-contain overlay" :src="item.image_url">
-                                    <img  class="card-img-top" :src="item.image_url">
-                                </div>
-                            </a>
-                            <b-popover :target="`popover-target-${item.image_id}`" triggers="hover" placement="top">
-                                <template v-slot:title>{{item.title}}</template>
-                                <small>Confidence {{item.confidence}}</small>
-                            </b-popover>
-                        </div>
+                        <ImageResult v-for="item in flickrImageItems" v-bind:data="item" v-bind:key="item.id"></ImageResult>
                     </div>
                 </div>
             </div>
@@ -48,15 +36,19 @@
 <script>
 
     import ChunkAPI from "../utils/chunk-api.js";
+    import ImageResult from "./ImageResult";
 
     export default {
         name: 'SearchBar',
+        components: {
+            ImageResult
+        },
         props: {
             msg: String
         },
         data: function () {
             return {
-                keyword_string: "park_bench",
+                keyword_string: "park bench",
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 1,
@@ -77,7 +69,7 @@
                 let jsonResult = this.chunkApi.get(keyword);
                 return jsonResult;
             },
-            process_chunk(chunk, keyword) {
+            process_chunk(chunk) {
                 chunk.then((resp) => {
                     let resultArray = resp.data;
                     // preprocess the flickr results:
@@ -123,30 +115,5 @@
 </script>
 
 <style scoped>
-    h3 {
-        margin: 40px 0 0;
-    }
 
-    .card-img-top {
-        width: 100%;
-        height: 15vw;
-        object-fit: cover;
-    }
-
-    .card-img-top-contain {
-        width: 100%;
-        height: 15vw;
-        object-fit: contain;
-    }
-    .overlay {
-        display: none;
-    }
-    .hover-container:hover .overlay {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        background: radial-gradient(transparent, #FFFFFF);
-    }
 </style>
