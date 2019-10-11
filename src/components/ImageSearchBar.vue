@@ -1,7 +1,7 @@
 <template>
     <div class="container mb-3">
         <div class="input-group col-12">
-            <input v-model="keyword_search_string" @keyup.enter="searchTriggered" @input="onChange" type="text"
+            <input v-model="keyword_search_string" @input="onChange" type="text"
                    class="form-control" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
                    v-on:blur="onLeave" placeholder="Type keyword..." aria-label="Keyword Search"
                    aria-describedby="button-add">
@@ -54,7 +54,6 @@
             },
             setResult(result) {
                 this.keyword_search_string = result;
-                window.console.log("clicked")
                 this.isOpen = false;
             },
             onArrowDown() {
@@ -85,12 +84,16 @@
                 }
             },
             onEnter() {
-                this.keyword_search_string = this.results[this.arrowCounter];
+
+                if (this.arrowCounter != -1) {
+                    this.keyword_search_string = this.results[this.arrowCounter];
+                }
+
                 this.isOpen = false;
                 this.arrowCounter = -1;
+                this.$emit("searchTriggered", {keyword_list: [this.keyword_search_string]})
             },
             handleClickOutside(evt) {
-                window.console.log("Hey")
                 if (!this.$el.contains(evt.target)) {
                     this.isOpen = false;
                     this.arrowCounter = -1;
