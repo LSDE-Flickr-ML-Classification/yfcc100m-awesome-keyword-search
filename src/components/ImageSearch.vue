@@ -2,12 +2,16 @@
     <div class="search-bar">
         <div v-if="loaded_search_data" class="container">
             <div class="row">
-                <ImageSearchBar v-bind:availableKeywords="available_keywords" v-on:searchTriggered="search"></ImageSearchBar>
+                <ImageSearchBar v-bind:availableKeywords="available_keywords"
+                                v-on:searchTriggered="search"></ImageSearchBar>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div id="result-box" class="row">
-                        <ImageResult v-for="item in flickrImageItems" v-bind:data="item" v-bind:key="item.id"></ImageResult>
+                    <div class="container">
+                        <div id="result-box" class="row">
+                            <ImageResult v-for="item in flickrImageItems" v-bind:data="item"
+                                         v-bind:key="item.id"></ImageResult>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -38,10 +42,10 @@
         },
         data: function () {
             return {
-                inverted_list : {},
+                inverted_list: {},
                 available_keywords: [],
                 loaded_search_data: false,
-                keyword_list: [ "park bench"],
+                keyword_list: ["park bench"],
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0
@@ -51,7 +55,7 @@
             // Load inverted list and available tags
             let queryAvailKeywords = this.chunkApi.fetch_available_keywords_list();
             let queryInvertedList = this.chunkApi.fetch_inverted_list();
-            Promise.all([queryAvailKeywords, queryInvertedList]).then( (response) => {
+            Promise.all([queryAvailKeywords, queryInvertedList]).then((response) => {
                 let [r1, r2] = response;
                 this.available_keywords = r1.data;
                 this.inverted_list = r2.data;
@@ -60,7 +64,7 @@
             })
         },
         methods: {
-            fetch (keyword) {
+            fetch(keyword) {
                 let jsonResult = this.chunkApi.get(keyword);
                 return jsonResult;
             },

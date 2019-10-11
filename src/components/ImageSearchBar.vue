@@ -1,5 +1,5 @@
 <template>
-    <div class="container mb-3">
+    <div class="container no-gutters mb-3">
         <div class="input-group col-12">
             <input v-model="keyword_search_string" @input="onChange" type="text"
                    class="form-control" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
