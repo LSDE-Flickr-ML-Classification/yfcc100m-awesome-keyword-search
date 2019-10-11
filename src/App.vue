@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import SearchBar from './components/SearchBar.vue'
+import SearchBar from './components/ImageSearch.vue'
 
 export default {
   name: 'app',

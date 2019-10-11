@@ -17,6 +17,10 @@ export default class ChunkAPI {
         return await this._http.get(`data/inverted_list.json`)
     }
 
+    async fetch_available_keywords_list() {
+        return await this._http.get(`data/tag_list.json`)
+    }
+
     async get (chunk_id) {
         return await this._http.get(`data/${chunk_id}.json`)
     }
