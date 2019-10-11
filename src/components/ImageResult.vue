@@ -49,7 +49,7 @@
     }
 
     .image-card {
-        width: 33%;
+        width: 25%;
     }
     .hover-container:hover .overlay {
         display: block;
