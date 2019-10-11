@@ -3,7 +3,7 @@
         <a :id="`popover-target-${data.image_id}`" target="_blank" :href="data.flickr_url">
             <div class="hover-container">
                 <img class="card-img-top-contain overlay" :src="data.image_url">
-                <img  class="card-img-top" :src="data.image_url">
+                <img class="card-img-top" :src="data.image_url">
             </div>
         </a>
         <b-popover :target="`popover-target-${data.image_id}`" triggers="hover" placement="top">
