@@ -39,7 +39,7 @@
         data: function () {
             return {
                 inverted_list : {},
-                available_tags: [],
+                available_keywords: [],
                 loaded_search_data: false,
                 keyword_list: [ "park bench"],
                 chunkApi: new ChunkAPI("/"),
@@ -51,7 +51,9 @@
             let queryAvailKeywords = this.chunkApi.fetch_available_keywords_list();
             let queryInvertedList = this.chunkApi.fetch_inverted_list();
             Promise.all([queryAvailKeywords, queryInvertedList]).then( (response) => {
-                [this.available_tags, this.inverted_list] = response;
+                let [r1, r2] = response;
+                this.available_keywords = r1.data;
+                this.inverted_list = r2.data;
                 this.loaded_search_data = true;
                 this.query();
             })
@@ -76,7 +78,7 @@
             search(event) {
                 this.keyword_list = event.keyword_list
 
-                if (!this.inverted_list.data.hasOwnProperty(this.keyword_list[0])) {
+                if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
                     // TODO: Feedback that item not exists
                 } else {
                     this.page_index = 1;
@@ -87,7 +89,7 @@
             },
             query() {
                 let keyword = this.keyword_list[0];
-                let chunk_id = this.inverted_list.data[keyword][0];
+                let chunk_id = this.inverted_list[keyword][0];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
