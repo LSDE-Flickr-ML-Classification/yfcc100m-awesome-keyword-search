@@ -7,8 +7,7 @@
             </div>
             <div v-if="canLoadMore" class="row mt-4 mb-4">
                 <div class="col-12">
-                    <div v-on:click="load_less" class="btn btn-sm btn-secondary"> Back </div>
-                    <div v-on:click="load_more" class="btn btn-sm btn-secondary"> Next </div>
+                    <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next</div>
                 </div>
            </div>
         </div>
@@ -79,20 +78,6 @@
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
-            load_less(){
-              if(this.page_index < 1)
-              {
-                this.page_index += 1;
-                //this.page_number+=1;
-                // TODO: Use page numbers to naviagate
-                this.query();
-              }
-              else
-              {
-                //AlertBox: Cant go back further
-
-              }
-            },
             load_more() {
 
               if(this.page_index < 1)
@@ -104,7 +89,8 @@
               }
               else
               {
-                //AlertBox: End of Results
+                this.page_index -= 1;
+                this.query();
               }
             },
             canLoadMore() {
