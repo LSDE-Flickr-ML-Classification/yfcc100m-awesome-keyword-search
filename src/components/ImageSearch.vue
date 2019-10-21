@@ -5,22 +5,18 @@
                 <ImageSearchBar v-bind:availableKeywords="available_keywords"
                                 v-on:searchTriggered="search"></ImageSearchBar>
             </div>
-            <div v-if="canLoadMore" class="row mt-4 mb-4">
-                <div class="col-12">
-                    <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next</div>
-                </div>
-           </div>
         </div>
-        <div v-else>
-            <div class="col-12 text-center">
-                <b-spinner type="grow" label="Loading..."> </b-spinner>
-            </div>
-        </div>
+
             <div class="row">
                 <div class="col-12">
+                  <div v-if="canLoadMore" class="row mt-4 mb-4">
+                      <div class="col-12">
+                          <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next >> </div>
+                      </div>
+                 </div>
                     <div class="container">
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item in flickrImageItems" v-bind:data="item"
+                            <ImageResult v-for="item,index in flickrImageItems" v-if="index < page_number && index > page_default" v-bind:data="item"
                                          v-bind:key="item.id"></ImageResult>
                         </div>
                     </div>
@@ -49,7 +45,8 @@
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0,
-                page_number: 1
+                page_number: 9,
+                page_default: 0
             }
         },
         created: function () {
@@ -80,18 +77,13 @@
             },
             load_more() {
 
-              if(this.page_index < 1)
-              {
-                this.page_index += 1;
+                this.page_index +=1;
+                this.page_default+=9;
+                this.page_number+=9;
                 // TODO: Use page numbers to naviagate
                 //this.page_number+=1;
                 this.query();
-              }
-              else
-              {
-                this.page_index -= 1;
-                this.query();
-              }
+
             },
             canLoadMore() {
                 return this.inverted_list[this.keyword_list[0]].length - 1 > this.page_index + 1;
