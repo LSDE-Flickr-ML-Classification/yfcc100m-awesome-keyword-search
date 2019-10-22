@@ -11,12 +11,14 @@
                 <div class="col-12">
                   <div v-if="canLoadMore" class="row mt-4 mb-4">
                       <div class="col-12">
+                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>2"> Back </div>
+                          <div class="btn btn-sm btn-secondary"> {{ page_number/9}} </div>
                           <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next >> </div>
                       </div>
                  </div>
                     <div class="container">
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item,index in flickrImageItems" v-if="index < page_number && index > page_default" v-bind:data="item"
+                            <ImageResult v-for="item,index in flickrImageItems" v-if="index< page_number && index > page_default" v-bind:data="item"
                                          v-bind:key="item.id"></ImageResult>
                         </div>
                     </div>
@@ -29,7 +31,6 @@
     import ChunkAPI from "../utils/chunk-api.js";
     import ImageResult from "./ImageResult";
     import ImageSearchBar from "./ImageSearchBar";
-
     export default {
         name: 'ImageSearch',
         components: {
@@ -75,22 +76,25 @@
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
+            load_less() {
+                this.page_index -=1;
+                this.page_default-=9;
+                this.page_number-=9;
+                // TODO: Use page numbers to naviagate
+                this.query();
+            },
             load_more() {
-
                 this.page_index +=1;
                 this.page_default+=9;
                 this.page_number+=9;
                 // TODO: Use page numbers to naviagate
-                //this.page_number+=1;
                 this.query();
-
             },
             canLoadMore() {
                 return this.inverted_list[this.keyword_list[0]].length - 1 > this.page_index + 1;
             },
             search(event) {
                 this.keyword_list = event.keyword_list
-
                 if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
                     // TODO: Feedback that item not exists
                 } else {
@@ -106,7 +110,6 @@
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
-
                 return;
             }
         }
