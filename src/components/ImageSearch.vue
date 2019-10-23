@@ -83,7 +83,7 @@
                 this.query();
             },
             canLoadMore() {
-                return this.inverted_list[this.keyword_list[0]].length - 1 > this.page_index + 1;
+                return this.inverted_list[this.keyword_list[0]]["buckets"].length - 1 > this.page_index + 1;
             },
             search(event) {
                 this.keyword_list = event.keyword_list
@@ -99,7 +99,7 @@
             },
             query() {
                 let keyword = this.keyword_list[0];
-                let chunk_id = this.inverted_list[keyword][this.page_index];
+                let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
