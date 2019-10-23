@@ -11,7 +11,7 @@
                   <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Jump to End</div>
                   <div v-if="canLoadMore" class="row mt-4 mb-4">
                       <div class="col-12">
-                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_start>1"> Back </div>
+                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back </div>
                           <div class="btn btn-sm btn-secondary">Page Number: {{page_number}} </div>
                           <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Next >></div>
                       </div>
