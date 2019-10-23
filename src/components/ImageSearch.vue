@@ -48,7 +48,8 @@
                 keyword_list: ["park bench"],
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
-                page_index: 0
+                page_index: 0,
+                message: null
             }
         },
         created: function () {
@@ -89,7 +90,9 @@
                 this.keyword_list = event.keyword_list
 
                 if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
-                    // TODO: Feedback that item not exists
+                    // TODO: Feedback that item not exists nicer
+                    this.message = "no results"
+                    this.flickrImageItems = [];
                 } else {
                     this.page_index = 0;
                     this.message = null;
