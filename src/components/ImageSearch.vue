@@ -8,6 +8,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="container">
+                        {{ message }}
                         <div id="result-box" class="row">
                             <ImageResult v-for="item in flickrImageItems" v-bind:data="item"
                                          v-bind:key="item.id"></ImageResult>
