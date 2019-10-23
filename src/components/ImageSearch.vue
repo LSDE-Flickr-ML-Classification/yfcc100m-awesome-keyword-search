@@ -5,25 +5,31 @@
                 <ImageSearchBar v-bind:availableKeywords="available_keywords"
                                 v-on:searchTriggered="search"></ImageSearchBar>
             </div>
-        </div>
-
             <div class="row">
                 <div class="col-12">
+                  <div v-on:click="reset_page" class="btn btn-sm btn-secondary" v-if="page_start>1">Jump to Start</div>
+                  <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Jump to End</div>
                   <div v-if="canLoadMore" class="row mt-4 mb-4">
                       <div class="col-12">
-                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>2"> Back </div>
-                          <div class="btn btn-sm btn-secondary"> {{ page_number/9}} </div>
-                          <div v-on:click="load_more" class="btn btn-sm btn-secondary">Next >> </div>
+                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_start>1"> Back </div>
+                          <div class="btn btn-sm btn-secondary">Page Number: {{page_number}} </div>
+                          <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Next >></div>
                       </div>
-                 </div>
+                    </div>
                     <div class="container">
+                        {{ message }}
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item,index in flickrImageItems" v-if="index< page_number && index > page_default" v-bind:data="item"
-                                         v-bind:key="item.id"></ImageResult>
+                            <ImageResult v-for="item in flickrImageItems.slice(page_start,page_end)" v-bind:data="item"></ImageResult>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div v-else>
+            <div class="col-12 text-center">
+                <b-spinner type="grow" label="Loading..."></b-spinner>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -31,6 +37,7 @@
     import ChunkAPI from "../utils/chunk-api.js";
     import ImageResult from "./ImageResult";
     import ImageSearchBar from "./ImageSearchBar";
+
     export default {
         name: 'ImageSearch',
         components: {
@@ -46,8 +53,11 @@
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0,
-                page_number: 9,
-                page_default: 0
+                page_start: 1,
+                page_end:9,
+                page_number:1,
+                results_end:10000,
+                message: null
             }
         },
         created: function () {
@@ -76,27 +86,51 @@
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
+            final_page() {
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start=this.results_end-9;
+                this.page_end=this.results_end-1;
+                this.page_number= Math.floor(this.results_end/8);
+                //this.query();
+            },
+            reset_page() {
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start=1;
+                this.page_end=9;
+                this.page_number=1;
+                //this.query();
+            },
             load_less() {
-                this.page_index -=1;
-                this.page_default-=9;
-                this.page_number-=9;
-                // TODO: Use page numbers to naviagate
-                this.query();
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start-=9;
+                this.page_end-=9;
+                this.page_number-=1;
+                //this.query();
             },
             load_more() {
-                this.page_index +=1;
-                this.page_default+=9;
-                this.page_number+=9;
-                // TODO: Use page numbers to naviagate
-                this.query();
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start+=9;
+                this.page_end+=9;
+                this.page_number+=1;
+                //this.query();
             },
             canLoadMore() {
-                return this.inverted_list[this.keyword_list[0]].length - 1 > this.page_index + 1;
+                return this.inverted_list[this.keyword_list[0]]["buckets"].length - 1 > this.page_index + 1;
             },
             search(event) {
                 this.keyword_list = event.keyword_list
+                this.page_start=1
+                this.page_end=9
+                this.page_number=1
+
                 if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
-                    // TODO: Feedback that item not exists
+                    // TODO: Feedback that item not exists nicer
+                    this.message = "no results"
+                    this.flickrImageItems = [];
                 } else {
                     this.page_index = 0;
                     this.message = null;
@@ -106,7 +140,8 @@
             },
             query() {
                 let keyword = this.keyword_list[0];
-                let chunk_id = this.inverted_list[keyword][this.page_index];
+                let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
+                this.results_end = this.inverted_list[keyword]["count"];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
@@ -117,4 +152,5 @@
 </script>
 
 <style scoped>
+
 </style>
