@@ -1,7 +1,7 @@
 <template>
     <div class="card image-card">
        <a :id="`popover-target-${get_id()}`" target="_blank" :href="get_flickr_url()">
-            <div class="hover-container">
+           <div class="hover-container">
                 <img class="card-img-top-contain overlay" :src="get_image_url()">
                 <img class="card-img-top" :src="get_image_url()">
             </div>
@@ -9,7 +9,7 @@
         <b-popover :target="`popover-target-${get_id()}`" triggers="hover" placement="top">
             <template v-slot:title>{{get_title()}}</template>
             <small>Confidence {{get_confidence()}}</small>
-        </b-popover>
+       </b-popover>
     </div>
 </template>
 
