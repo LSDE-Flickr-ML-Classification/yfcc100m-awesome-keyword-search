@@ -6,6 +6,7 @@
                    v-on:blur="onLeave" placeholder="Type keyword..." aria-label="Keyword Search"
                    aria-describedby="button-add">
             <div class="input-group-append">
+                <b-button class="btn btn-secondary" id="button-explorer" v-b-modal.modal-1>...</b-button>
                 <button v-on:click="searchTriggered" class="btn btn-primary" type="button" id="button-add">Search
                 </button>
             </div>
@@ -19,13 +20,23 @@
                 </li>
             </ul>
         </div>
+
+        <b-modal ref="word-cloud-modal" id="modal-1" class="modal-fullscreen" size="xl" centered title="Explorer Tags" hide-footer>
+            <template v-slot:default class="modal-body">
+                <LabelCloud v-on:labelClicked="labelClicked"></LabelCloud>
+            </template>
+        </b-modal>
     </div>
 </template>
 
 <script>
+        import LabelCloud from "./LabelCloud";
 
     export default {
         name: 'ImageSearchBar',
+        components: {
+            LabelCloud,
+        },
         props: {
             availableKeywords: {
                 type: Array,
@@ -98,6 +109,11 @@
                     this.isOpen = false;
                     this.arrowCounter = -1;
                 }
+            },
+            labelClicked(word) {
+                this.keyword_search_string = word;
+                this.$refs['word-cloud-modal'].hide()
+                this.$emit("searchTriggered", {keyword_list: [this.keyword_search_string]})
             },
             mounted() {
                 document.addEventListener('click', this.handleClickOutside);
