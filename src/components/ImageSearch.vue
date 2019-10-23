@@ -12,7 +12,11 @@
                   <div v-if="canLoadMore" class="row mt-4 mb-4">
                       <div class="col-12">
                           <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back </div>
-                          <div class="btn btn-sm btn-secondary">Page Number: {{page_number}} </div>
+                          <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2">[ {{page_number-2}} ]</div>
+                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1">[ {{page_number-1}} ]</div>
+                          <div class="btn btn-sm btn-secondary">Current Page: [ {{page_number}} ]</div>
+                          <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end" >[ {{page_number+1}} ]</div>
+                          <div v-on:click="load_more2"class="btn btn-sm btn-secondary" v-if="(page_end+16)<results_end" >[ {{page_number+2}} ]</div>
                           <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Next >></div>
                       </div>
                     </div>
@@ -108,6 +112,22 @@
                 this.page_start-=9;
                 this.page_end-=9;
                 this.page_number-=1;
+                //this.query();
+            },
+            load_less2() {
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start-=18;
+                this.page_end-=18;
+                this.page_number-=2;
+                //this.query();
+            },
+            load_more2() {
+                // TODO: Implement
+                //this.page_index += 1;
+                this.page_start+=18;
+                this.page_end+=18;
+                this.page_number+=2;
                 //this.query();
             },
             load_more() {
