@@ -10,8 +10,7 @@
                     <div class="container">
                         {{ message }}
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item in flickrImageItems" v-bind:data="item"
-                                         v-bind:key="item.id"></ImageResult>
+                            <ImageResult v-for="item in flickrImageItems" v-bind:data="item"></ImageResult>
                         </div>
                     </div>
                 </div>
