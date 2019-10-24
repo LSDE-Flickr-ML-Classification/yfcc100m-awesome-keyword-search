@@ -1,16 +1,16 @@
 <template>
     <div class="search-bar">
-        <div v-if="loaded_search_data" class="container">
+        <div v-if="loaded_search_data" class="container p-0">
             <div class="row">
-                <ImageSearchBar v-bind:availableKeywords="available_keywords"
-                                v-on:searchTriggered="search"></ImageSearchBar>
+                <ImageSearchBar ref="searchBar" v-bind:availableKeywords="available_keywords" :currentQueryLabel.sync="current_keyword"
+                                v-on:searchTriggered="searchTriggerd"></ImageSearchBar>
             </div>
             <div class="row">
                 <div class="col-12">
-                    <div class="container">
+                    <div class="container p-0">
                         {{ message }}
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item in flickrImageItems" v-bind:data="item"></ImageResult>
+                            <ImageResult v-for="(item, index) in flickrImageItems.slice(0, 100)" v-bind:key="index" v-bind:data="item" v-bind:label_list="available_keywords" v-bind:current_keyword="current_keyword" v-on:labelClicked="labelClicked"></ImageResult>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                 inverted_list: {},
                 available_keywords: [],
                 loaded_search_data: false,
-                keyword_list: ["park bench"],
+                current_keyword: null,
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0,
@@ -84,12 +84,16 @@
                 this.query();
             },
             canLoadMore() {
-                return this.inverted_list[this.keyword_list[0]]["buckets"].length - 1 > this.page_index + 1;
+                return this.inverted_list[this.current_keyword]["buckets"].length - 1 > this.page_index + 1;
             },
-            search(event) {
-                this.keyword_list = event.keyword_list
+            searchTriggerd(event) {
+                this.current_keyword = event.label
 
-                if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
+                this.search()
+            },
+            search() {
+                this.$refs.searchBar.refreshInput(this.current_keyword)
+                 if (!this.inverted_list.hasOwnProperty(this.current_keyword)) {
                     // TODO: Feedback that item not exists nicer
                     this.message = "no results"
                     this.flickrImageItems = [];
@@ -100,8 +104,12 @@
                     this.query();
                 }
             },
+            labelClicked(e) {
+                this.current_keyword = e.label
+                this.search()
+            },
             query() {
-                let keyword = this.keyword_list[0];
+                let keyword = this.current_keyword;
                 let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);

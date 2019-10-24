@@ -1,7 +1,7 @@
 <template>
-    <div class="container no-gutters mb-3">
+    <div class="container p-0 no-gutters mb-3">
         <div class="input-group col-12">
-            <input v-model="keyword_search_string" @input="onChange" type="text"
+            <input v-model="currentSearchString" @input="onChange" type="text"
                    class="form-control" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
                    v-on:blur="onLeave" placeholder="Type keyword..." aria-label="Keyword Search"
                    aria-describedby="button-add">
@@ -11,9 +11,9 @@
                 </button>
             </div>
         </div>
-        <div class="autocomplete m-0 col-12">
+        <div class="autocomplete m-0 col-12 border border-top-0 border-light rounded-bottom border-secondary">
             <ul v-show="isOpen" class="autocomplete-results list-group-flush list-group">
-                <li v-for="(result, i) in results" :key="i" @click="setResult(result)"
+                <li v-for="(result, i) in results" :key="i" @click="setResultOnClick(result)"
                     class="autocomplete-result list-group-item-action list-group-item"
                     :class="{ 'active ': i === arrowCounter }">
                     {{ result }}
@@ -43,29 +43,34 @@
                 required: false,
                 default: () => [],
             },
+            currentQueryLabel: String
         },
         data: function () {
             return {
-                keyword_search_string: "park bench",
                 results: [],
                 isOpen: false,
                 arrowCounter: -1,
+                currentSearchString: this.currentQueryLabel
             }
         },
         methods: {
             searchTriggered() {
-                this.$emit("searchTriggered", {keyword_list: [this.keyword_search_string]})
+                this.$emit("searchTriggered", {label: this.currentSearchString})
             },
             onChange() {
                 this.isOpen = true;
                 this.filterResults();
             },
             filterResults() {
-                this.results = this.availableKeywords.filter(item => item.toLowerCase().indexOf(this.keyword_search_string.toLowerCase()) > -1);
+                this.results = this.availableKeywords.filter(item => item.toLowerCase().indexOf(this.currentSearchString.toLowerCase()) > -1);
             },
-            setResult(result) {
-                this.keyword_search_string = result;
+            setResultOnClick(result) {
+                this.currentSearchString = result;
                 this.isOpen = false;
+                this.$emit("searchTriggered", {label: this.currentSearchString})
+            },
+            refreshInput(currentKeyword) {
+                this.currentSearchString = currentKeyword;
             },
             onArrowDown() {
                 if (this.arrowCounter < this.results.length) {
@@ -97,12 +102,12 @@
             onEnter() {
 
                 if (this.arrowCounter != -1) {
-                    this.keyword_search_string = this.results[this.arrowCounter];
+                    this.currentSearchString = this.results[this.arrowCounter];
                 }
 
                 this.isOpen = false;
                 this.arrowCounter = -1;
-                this.$emit("searchTriggered", {keyword_list: [this.keyword_search_string]})
+                this.$emit("searchTriggered", { label: this.currentSearchString})
             },
             handleClickOutside(evt) {
                 if (!this.$el.contains(evt.target)) {
@@ -111,9 +116,9 @@
                 }
             },
             labelClicked(word) {
-                this.keyword_search_string = word;
+                this.currentSearchString = word;
                 this.$refs['word-cloud-modal'].hide()
-                this.$emit("searchTriggered", {keyword_list: [this.keyword_search_string]})
+                this.$emit("searchTriggered", { label: this.currentSearchString})
             },
             mounted() {
                 document.addEventListener('click', this.handleClickOutside);
@@ -127,14 +132,16 @@
 
 <style scoped>
     .autocomplete {
-        position: relative;
+        position: absolute;
+        left: 0px; right: 0px;
+        z-index: 999999;
     }
 
     .autocomplete-results {
         padding: 0;
         margin: 0;
         border: 0px;
-        max-height: 10vh;
+        max-height: 50vh;
         overflow: auto;
         width: 100%;
     }

@@ -7,8 +7,11 @@
             </div>
         </a>
         <b-popover :target="`popover-target-${get_id()}`" triggers="hover" placement="top">
-            <template v-slot:title>{{get_title()}}</template>
             <small>Confidence {{get_confidence()}}</small>
+            <p v-if="get_other_tags().length > 0 ">
+                <small>See also:</small> <br/>
+                <button class="badge badge-primary" v-for="(label, index) in get_other_tags()" v-bind:key="index" v-on:click="label_clicked(label)">{{label}}</button>
+            </p>
        </b-popover>
     </div>
 </template>
@@ -17,7 +20,9 @@
     export default {
         name: 'ImageResult',
         props: {
-            data: Array
+            data: Array,
+            label_list: Array,
+            current_keyword: String
         },
         data: function () {
             return {
@@ -31,9 +36,6 @@
             get_id() {
                 return this.data[0]
             },
-            get_title() {
-                return this.data[1]
-            },
             get_confidence() {
                 return this.data[6]
             },
@@ -43,6 +45,15 @@
             get_flickr_url() {
                 return `https://www.flickr.com/photos/${this.data[1]}/${this.data[0]}`
             },
+            get_other_tags() {
+
+                return this.data[7].map((val) => {
+                    return this.label_list[val]
+                }).filter(label => label != this.current_keyword)
+            },
+            label_clicked(label) {
+                this.$emit("labelClicked", { "label": label })
+            }
         }
     }
 </script>
