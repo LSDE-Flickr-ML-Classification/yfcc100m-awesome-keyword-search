@@ -14,7 +14,9 @@
                           <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back </div>
                           <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2">[ {{page_number-2}} ]</div>
                           <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1">[ {{page_number-1}} ]</div>
-                          <div class="btn btn-sm btn-secondary">Current Page: [ {{page_number}} ]</div>
+                          <div class="btn btn-sm btn-secondary">Current Page: [ {{ page_number }} ]</div>
+
+
                           <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end" >[ {{page_number+1}} ]</div>
                           <div v-on:click="load_more2"class="btn btn-sm btn-secondary" v-if="(page_end+16)<results_end" >[ {{page_number+2}} ]</div>
                           <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Next >></div>
@@ -53,7 +55,7 @@
                 inverted_list: {},
                 available_keywords: [],
                 loaded_search_data: false,
-                keyword_list: ["park bench"],
+                keyword_list: ["unclassified"],
                 chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0,
@@ -61,6 +63,9 @@
                 page_end:9,
                 page_number:1,
                 results_end:10000,
+                bucket_checker:1,
+                bucket_lenght:1000,
+                bucket_count: 1,
                 message: null
             }
         },
@@ -86,6 +91,7 @@
                     let resultArray = resp.data;
                     // preprocess the flickr results:
                     this.flickrImageItems = resultArray;
+                    this.bucket_lenght=this.flickrImageItems.length;
                 }).catch(() => {
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
@@ -136,7 +142,23 @@
                 this.page_start+=9;
                 this.page_end+=9;
                 this.page_number+=1;
+
+                if((this.bucket_lenght < this.results_end && ((this.page_end+8) > this.results_end)))
+                {
+                  if(this.bucket_checker < this.bucket_count)
+                  {
+                  this.bucketChange();
+                  }
+                }
+
                 //this.query();
+            },
+            bucketChange() {
+              this.bucket_checker+=1;
+              this.page_index+=1;
+              this.query();
+              this.page_number+=1;
+
             },
             canLoadMore() {
                 return this.inverted_list[this.keyword_list[0]]["buckets"].length - 1 > this.page_index + 1;
@@ -162,6 +184,7 @@
                 let keyword = this.keyword_list[0];
                 let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
                 this.results_end = this.inverted_list[keyword]["count"];
+                this.bucket_count=this.inverted_list[keyword]["buckets"].length;
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
