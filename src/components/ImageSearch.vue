@@ -1,31 +1,49 @@
 <template>
     <div class="search-bar">
-        <div v-if="loaded_search_data" class="container">
+        <div v-if="loaded_search_data" class="container p-0">
             <div class="row">
-                <ImageSearchBar v-bind:availableKeywords="available_keywords"
-                                v-on:searchTriggered="search"></ImageSearchBar>
+                <ImageSearchBar ref="searchBar" v-bind:availableKeywords="available_keywords"
+                                :currentQueryLabel.sync="current_keyword"
+                                v-on:searchTriggered="searchTriggerd"></ImageSearchBar>
             </div>
             <div class="row">
                 <div class="col-12">
-                  <div v-on:click="reset_page" class="btn btn-sm btn-secondary" v-if="page_start>1">Jump to Start</div>
-                  <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Jump to End</div>
-                  <div v-if="canLoadMore" class="row mt-4 mb-4">
-                      <div class="col-12">
-                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back </div>
-                          <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2">[ {{page_number-2}} ]</div>
-                          <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1">[ {{page_number-1}} ]</div>
-                          <div class="btn btn-sm btn-secondary">Current Page: [ {{ page_number }} ]</div>
-
-
-                          <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end" >[ {{page_number+1}} ]</div>
-                          <div v-on:click="load_more2"class="btn btn-sm btn-secondary" v-if="(page_end+16)<results_end" >[ {{page_number+2}} ]</div>
-                          <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Next >></div>
-                      </div>
+                    <div v-on:click="reset_page" class="btn btn-sm btn-secondary" v-if="page_start>1">Jump to Start
                     </div>
-                    <div class="container">
+                    <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Jump
+                        to End
+                    </div>
+                    <div v-if="canLoadMore" class="row mt-4 mb-4">
+                        <div class="col-12">
+                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back
+                            </div>
+                            <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2">[
+                                {{page_number-2}} ]
+                            </div>
+                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1">[
+                                {{page_number-1}} ]
+                            </div>
+                            <div class="btn btn-sm btn-secondary">Current Page: [ {{ page_number }} ]</div>
+
+
+                            <div v-on:click="load_more" class="btn btn-sm btn-secondary"
+                                 v-if="(page_end+8)<results_end">[ {{page_number+1}} ]
+                            </div>
+                            <div v-on:click="load_more2" class="btn btn-sm btn-secondary"
+                                 v-if="(page_end+16)<results_end">[ {{page_number+2}} ]
+                            </div>
+                            <div v-on:click="load_more" class="btn btn-sm btn-secondary"
+                                 v-if="(page_end+8)<results_end">Next >>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container p-0">
                         {{ message }}
                         <div id="result-box" class="row">
-                            <ImageResult v-for="item in flickrImageItems.slice(page_start,page_end)" v-bind:data="item"></ImageResult>
+                            <ImageResult v-for="(item, index) in flickrImageItems.slice(page_start,page_end)"
+                                         v-bind:key="index" v-bind:data="item" v-bind:label_list="available_keywords"
+                                         v-bind:current_keyword="current_keyword"
+                                         v-on:labelClicked="labelClicked"></ImageResult>
                         </div>
                     </div>
                 </div>
@@ -55,17 +73,17 @@
                 inverted_list: {},
                 available_keywords: [],
                 loaded_search_data: false,
-                keyword_list: ["unclassified"],
-                chunkApi: new ChunkAPI("/"),
                 flickrImageItems: [],
                 page_index: 0,
                 page_start: 1,
-                page_end:9,
-                page_number:1,
-                results_end:10000,
-                bucket_checker:1,
-                bucket_lenght:1000,
+                page_end: 9,
+                page_number: 1,
+                results_end: 10000,
+                bucket_checker: 1,
+                bucket_lenght: 1000,
                 bucket_count: 1,
+                current_keyword: null,
+                chunkApi: new ChunkAPI("/"),
                 message: null
             }
         },
@@ -91,7 +109,7 @@
                     let resultArray = resp.data;
                     // preprocess the flickr results:
                     this.flickrImageItems = resultArray;
-                    this.bucket_lenght=this.flickrImageItems.length;
+                    this.bucket_lenght = this.flickrImageItems.length;
                 }).catch(() => {
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
@@ -99,77 +117,80 @@
             final_page() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start=this.results_end-9;
-                this.page_end=this.results_end-1;
-                this.page_number= Math.floor(this.results_end/8);
+                this.page_start = this.results_end - 9;
+                this.page_end = this.results_end - 1;
+                this.page_number = Math.floor(this.results_end / 8);
                 //this.query();
             },
             reset_page() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start=1;
-                this.page_end=9;
-                this.page_number=1;
+                this.page_start = 1;
+                this.page_end = 9;
+                this.page_number = 1;
                 //this.query();
             },
             load_less() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start-=9;
-                this.page_end-=9;
-                this.page_number-=1;
+                this.page_start -= 9;
+                this.page_end -= 9;
+                this.page_number -= 1;
                 //this.query();
             },
             load_less2() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start-=18;
-                this.page_end-=18;
-                this.page_number-=2;
+                this.page_start -= 18;
+                this.page_end -= 18;
+                this.page_number -= 2;
                 //this.query();
             },
             load_more2() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start+=18;
-                this.page_end+=18;
-                this.page_number+=2;
+                this.page_start += 18;
+                this.page_end += 18;
+                this.page_number += 2;
                 //this.query();
             },
             load_more() {
                 // TODO: Implement
                 //this.page_index += 1;
-                this.page_start+=9;
-                this.page_end+=9;
-                this.page_number+=1;
+                this.page_start += 9;
+                this.page_end += 9;
+                this.page_number += 1;
 
-                if((this.bucket_lenght < this.results_end && ((this.page_end+8) > this.results_end)))
-                {
-                  if(this.bucket_checker < this.bucket_count)
-                  {
-                  this.bucketChange();
-                  }
+                if ((this.bucket_lenght < this.results_end && ((this.page_end + 8) > this.results_end))) {
+                    if (this.bucket_checker < this.bucket_count) {
+                        this.bucketChange();
+                    }
                 }
 
                 //this.query();
             },
             bucketChange() {
-              this.bucket_checker+=1;
-              this.page_index+=1;
-              this.query();
-              this.page_number+=1;
+                this.bucket_checker += 1;
+                this.page_index += 1;
+                this.query();
+                this.page_number += 1;
 
             },
             canLoadMore() {
-                return this.inverted_list[this.keyword_list[0]]["buckets"].length - 1 > this.page_index + 1;
+                return this.inverted_list[this.current_keyword]["buckets"].length - 1 > this.page_index + 1;
             },
-            search(event) {
-                this.keyword_list = event.keyword_list
-                this.page_start=1
-                this.page_end=9
-                this.page_number=1
+            searchTriggerd(event) {
+                this.current_keyword = event.label
+                this.search()
+            },
+            search() {
 
-                if (!this.inverted_list.hasOwnProperty(this.keyword_list[0])) {
+                this.page_start = 1
+                this.page_end = 9
+                this.page_number = 1
+
+                this.$refs.searchBar.refreshInput(this.current_keyword)
+                if (!this.inverted_list.hasOwnProperty(this.current_keyword)) {
                     // TODO: Feedback that item not exists nicer
                     this.message = "no results"
                     this.flickrImageItems = [];
@@ -180,11 +201,17 @@
                     this.query();
                 }
             },
+            labelClicked(e) {
+                this.current_keyword = e.label
+                this.search()
+            },
             query() {
-                let keyword = this.keyword_list[0];
+                let keyword = this.current_keyword;
                 let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
+
                 this.results_end = this.inverted_list[keyword]["count"];
-                this.bucket_count=this.inverted_list[keyword]["buckets"].length;
+                this.bucket_count = this.inverted_list[keyword]["buckets"].length;
+
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)

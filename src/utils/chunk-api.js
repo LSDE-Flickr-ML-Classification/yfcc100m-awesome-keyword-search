@@ -24,4 +24,8 @@ export default class ChunkAPI {
     async get (chunk_id) {
         return await this._http.get(`data/${chunk_id}.json`)
     }
+
+    async fetch_label_cloud() {
+        return await this._http.get(`data/label_cloud.json`)
+    }
 }
