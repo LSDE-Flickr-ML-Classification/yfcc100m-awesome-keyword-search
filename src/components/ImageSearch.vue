@@ -10,37 +10,24 @@
                 <div class="col-12">
                     <div v-on:click="reset_page" class="btn btn-sm btn-secondary" v-if="page_start>1">Jump to Start
                     </div>
-                    <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+8)<results_end">Jump
+                    <div v-on:click="final_page" class="btn btn-sm btn-secondary" v-if="(page_end+20)<results_end && bucket_lenght>0">Jump
                         to End
                     </div>
                     <div v-if="canLoadMore" class="row mt-4 mb-4">
                         <div class="col-12">
-                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1"> Back
-                            </div>
-                            <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2">[
-                                {{page_number-2}} ]
-                            </div>
-                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1">[
-                                {{page_number-1}} ]
-                            </div>
-                            <div class="btn btn-sm btn-secondary">Current Page: [ {{ page_number }} ]</div>
-
-
-                            <div v-on:click="load_more" class="btn btn-sm btn-secondary"
-                                 v-if="(page_end+8)<results_end">[ {{page_number+1}} ]
-                            </div>
-                            <div v-on:click="load_more2" class="btn btn-sm btn-secondary"
-                                 v-if="(page_end+16)<results_end">[ {{page_number+2}} ]
-                            </div>
-                            <div v-on:click="load_more" class="btn btn-sm btn-secondary"
-                                 v-if="(page_end+8)<results_end">Next >>
-                            </div>
+                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1 && bucket_lenght>0"> Back</div>
+                            <div v-on:click="load_less2" class="btn btn-sm btn-secondary" v-if="page_number>2 && bucket_lenght>0">[{{page_number-2}} ]</div>
+                            <div v-on:click="load_less" class="btn btn-sm btn-secondary" v-if="page_number>1 && bucket_lenght>0">[{{page_number-1}} ] </div>
+                            <div class="btn btn-sm btn-secondary" v-if="bucket_lenght>0">Current Page: [ {{ page_number }} ]</div>
+                            <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+20)<results_end && bucket_lenght>0">[ {{page_number+1}} ] </div>
+                            <div v-on:click="load_more2" class="btn btn-sm btn-secondary" v-if="(page_end+40)<results_end && bucket_lenght>0">[ {{page_number+2}} ]</div>
+                            <div v-on:click="load_more" class="btn btn-sm btn-secondary" v-if="(page_end+20)<results_end && bucket_lenght>0">Next >> </div>
                         </div>
                     </div>
                     <div class="container p-0">
                         {{ message }}
                         <div id="result-box" class="row">
-                            <ImageResult v-for="(item, index) in flickrImageItems.slice(page_start,page_end)"
+                            <ImageResult v-for="item in flickrImageItems.slice(page_start,page_end)"
                                          v-bind:key="index" v-bind:data="item" v-bind:label_list="available_keywords"
                                          v-bind:current_keyword="current_keyword"
                                          v-on:labelClicked="labelClicked"></ImageResult>
@@ -61,7 +48,6 @@
     import ChunkAPI from "../utils/chunk-api.js";
     import ImageResult from "./ImageResult";
     import ImageSearchBar from "./ImageSearchBar";
-
     export default {
         name: 'ImageSearch',
         components: {
@@ -74,14 +60,16 @@
                 available_keywords: [],
                 loaded_search_data: false,
                 flickrImageItems: [],
+                flickrImageItems_buffer: [],
                 page_index: 0,
                 page_start: 1,
-                page_end: 9,
+                page_end: 21,
                 page_number: 1,
+                multiple_buckets: 0,
                 results_end: 10000,
                 bucket_checker: 1,
-                bucket_lenght: 1000,
-                bucket_count: 1,
+                bucket_lenght: 0,
+                bucket_count: 0,
                 current_keyword: null,
                 chunkApi: new ChunkAPI("/"),
                 message: null
@@ -106,73 +94,62 @@
             },
             process_chunk(chunk) {
                 chunk.then((resp) => {
+
                     let resultArray = resp.data;
-                    // preprocess the flickr results:
-                    this.flickrImageItems = resultArray;
+                    this.flickrImageItems_buffer = resultArray;
+                    this.flickrImageItems = this.flickrImageItems.concat(this.flickrImageItems_buffer)
                     this.bucket_lenght = this.flickrImageItems.length;
+
+                if(this.multiple_buckets > 1)
+                {
+                    this.multiple_buckets-=1;
+                    this.page_index+=1;
+                    this.query();
+                }
+
                 }).catch(() => {
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
             final_page() {
-                // TODO: Implement
-                //this.page_index += 1;
-                this.page_start = this.results_end - 9;
+
+                this.page_start = this.results_end - 21;
                 this.page_end = this.results_end - 1;
-                this.page_number = Math.floor(this.results_end / 8);
-                //this.query();
+                this.page_number = Math.floor(this.results_end/ 20);
+
             },
             reset_page() {
-                // TODO: Implement
-                //this.page_index += 1;
+
                 this.page_start = 1;
-                this.page_end = 9;
+                this.page_end = 21;
                 this.page_number = 1;
-                //this.query();
+
             },
             load_less() {
-                // TODO: Implement
-                //this.page_index += 1;
-                this.page_start -= 9;
-                this.page_end -= 9;
+
+                this.page_start -= 21;
+                this.page_end -= 21;
                 this.page_number -= 1;
-                //this.query();
+
             },
             load_less2() {
-                // TODO: Implement
-                //this.page_index += 1;
-                this.page_start -= 18;
-                this.page_end -= 18;
+
+                this.page_start -= 42;
+                this.page_end -= 42;
                 this.page_number -= 2;
-                //this.query();
+
             },
             load_more2() {
-                // TODO: Implement
-                //this.page_index += 1;
-                this.page_start += 18;
-                this.page_end += 18;
+
+                this.page_start += 42;
+                this.page_end += 42;
                 this.page_number += 2;
-                //this.query();
+
             },
             load_more() {
-                // TODO: Implement
-                //this.page_index += 1;
-                this.page_start += 9;
-                this.page_end += 9;
-                this.page_number += 1;
 
-                if ((this.bucket_lenght < this.results_end && ((this.page_end + 8) > this.results_end))) {
-                    if (this.bucket_checker < this.bucket_count) {
-                        this.bucketChange();
-                    }
-                }
-
-                //this.query();
-            },
-            bucketChange() {
-                this.bucket_checker += 1;
-                this.page_index += 1;
-                this.query();
+                this.page_start += 21;
+                this.page_end += 21;
                 this.page_number += 1;
 
             },
@@ -184,14 +161,11 @@
                 this.search()
             },
             search() {
-
                 this.page_start = 1
-                this.page_end = 9
+                this.page_end = 21
                 this.page_number = 1
-
                 this.$refs.searchBar.refreshInput(this.current_keyword)
                 if (!this.inverted_list.hasOwnProperty(this.current_keyword)) {
-                    // TODO: Feedback that item not exists nicer
                     this.message = "no results"
                     this.flickrImageItems = [];
                 } else {
@@ -199,6 +173,10 @@
                     this.message = null;
                     this.flickrImageItems = [];
                     this.query();
+                }
+                if(this.bucket_count > 1)
+                {
+                  this.multiple_buckets = this.bucket_count;
                 }
             },
             labelClicked(e) {
@@ -208,11 +186,11 @@
             query() {
                 let keyword = this.current_keyword;
                 let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
-
                 this.results_end = this.inverted_list[keyword]["count"];
                 this.bucket_count = this.inverted_list[keyword]["buckets"].length;
 
                 // currently only use first keyword:
+
                 let chunk = this.fetch(chunk_id);
                 this.process_chunk(chunk, keyword)
                 return;
@@ -220,7 +198,5 @@
         }
     }
 </script>
-
 <style scoped>
-
 </style>
