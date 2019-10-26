@@ -22,7 +22,9 @@ export default class ChunkAPI {
     }
 
     async get (chunk_id) {
-        return await this._http.get(`data/${chunk_id}.json`)
+        return await this._http.get(`data/compressed/${chunk_id}`, {
+            responseType: 'arraybuffer'
+        })
     }
 
     async fetch_label_cloud() {

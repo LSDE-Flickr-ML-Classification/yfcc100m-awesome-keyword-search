@@ -33,6 +33,7 @@
     import ChunkAPI from "../utils/chunk-api.js";
     import ImageResult from "./ImageResult";
     import ImageSearchBar from "./ImageSearchBar";
+    var msgpack = require("msgpack-lite");
 
     export default {
         name: 'ImageSearch',
@@ -71,10 +72,11 @@
             },
             process_chunk(chunk) {
                 chunk.then((resp) => {
-                    let resultArray = resp.data;
                     // preprocess the flickr results:
-                    this.flickrImageItems = resultArray;
-                }).catch(() => {
+                    let compressedByteArray = new Uint8Array(resp.data);
+                    let decodedResultArray = msgpack.decode(compressedByteArray);
+                    this.flickrImageItems = decodedResultArray;
+                }).catch((e) => {
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
@@ -113,8 +115,7 @@
                 let chunk_id = this.inverted_list[keyword]["buckets"][this.page_index];
                 // currently only use first keyword:
                 let chunk = this.fetch(chunk_id);
-                this.process_chunk(chunk, keyword)
-
+                this.process_chunk(chunk, keyword);
                 return;
             }
         }
