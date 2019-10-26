@@ -9,8 +9,8 @@
                    v-on:blur="onLeave" placeholder="Type keyword..." aria-label="Keyword Search"
                    aria-describedby="button-add">
             <div class="input-group-append">
-                <button v-on:click="searchTriggered" class="btn btn-primary" type="button" id="button-add">Search
-                </button>
+                <button v-on:click="randomSearch" class="btn btn-secondary" type="button" id="button-random">🎲</button>
+                <button v-on:click="searchTriggered" class="btn btn-primary" type="button" id="button-search">Search</button>
             </div>
         </div>
         <div class="autocomplete m-0 col-12 border border-top-0 border-light rounded-bottom border-secondary">
@@ -52,6 +52,9 @@
         methods: {
             searchTriggered() {
                 this.$emit("searchTriggered", {label: this.currentSearchString})
+            },
+            randomSearch() {
+                this.$emit("searchTriggered", {label: this.availableKeywords[Math.floor(Math.random() * this.availableKeywords.length)]})
             },
             onChange() {
                 this.isOpen = true;
