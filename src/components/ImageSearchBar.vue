@@ -118,12 +118,12 @@
                 this.currentSearchString = word;
                 this.$emit("searchTriggered", { label: this.currentSearchString})
             },
-            mounted() {
-                document.addEventListener('click', this.handleClickOutside);
-            },
-            destroyed() {
-                document.removeEventListener('click', this.handleClickOutside);
-            }
+        },
+        mounted() {
+            document.addEventListener('click', this.handleClickOutside);
+        },
+        destroyed() {
+            document.removeEventListener('click', this.handleClickOutside);
         }
     }
 </script>
