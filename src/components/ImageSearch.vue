@@ -76,7 +76,7 @@
                     let compressedByteArray = new Uint8Array(resp.data);
                     let decodedResultArray = msgpack.decode(compressedByteArray);
                     this.flickrImageItems = decodedResultArray;
-                }).catch((e) => {
+                }).catch(() => {
                     // TODO: Major error --> inverted list and folder structure diverge
                 });
             },
