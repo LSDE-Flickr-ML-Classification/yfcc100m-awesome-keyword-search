@@ -1,12 +1,14 @@
 <template>
     <div class="container p-0 no-gutters mb-3">
+        <div class="col-12 p-0 mb-2">
+            <LabelCloud class="w-100" v-on:labelClicked="labelClicked"></LabelCloud>
+        </div>
         <div class="input-group col-12">
             <input v-model="currentSearchString" @input="onChange" type="text"
                    class="form-control" @keydown.down="onArrowDown" @keydown.up="onArrowUp" @keydown.enter="onEnter"
                    v-on:blur="onLeave" placeholder="Type keyword..." aria-label="Keyword Search"
                    aria-describedby="button-add">
             <div class="input-group-append">
-                <b-button class="btn btn-secondary" id="button-explorer" v-b-modal.modal-1>...</b-button>
                 <button v-on:click="searchTriggered" class="btn btn-primary" type="button" id="button-add">Search
                 </button>
             </div>
@@ -20,12 +22,6 @@
                 </li>
             </ul>
         </div>
-
-        <b-modal ref="word-cloud-modal" id="modal-1" class="modal-fullscreen" size="xl" centered title="Explorer Tags" hide-footer>
-            <template v-slot:default class="modal-body">
-                <LabelCloud v-on:labelClicked="labelClicked"></LabelCloud>
-            </template>
-        </b-modal>
     </div>
 </template>
 
@@ -117,7 +113,6 @@
             },
             labelClicked(word) {
                 this.currentSearchString = word;
-                this.$refs['word-cloud-modal'].hide()
                 this.$emit("searchTriggered", { label: this.currentSearchString})
             },
             mounted() {

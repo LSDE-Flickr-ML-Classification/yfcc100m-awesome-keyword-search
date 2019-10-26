@@ -61,7 +61,6 @@
                 this.available_keywords = r1.data;
                 this.inverted_list = r2.data;
                 this.loaded_search_data = true;
-                this.query();
             })
         },
         methods: {
