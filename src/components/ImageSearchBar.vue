@@ -13,8 +13,8 @@
                 <button v-on:click="searchTriggered" class="btn btn-primary" type="button" id="button-search">Search</button>
             </div>
         </div>
-        <div class="autocomplete m-0 col-12 border border-top-0 border-light rounded-bottom border-secondary">
-            <ul v-show="isOpen" class="autocomplete-results list-group-flush list-group">
+        <div class="autocomplete m-0 col-12">
+            <ul v-show="isOpen" class="autocomplete-results list-group-flush list-group border border-top-0 border-light rounded-bottom border-secondary">
                 <li v-for="(result, i) in results" :key="i" @click="setResultOnClick(result)"
                     class="autocomplete-result list-group-item-action list-group-item"
                     :class="{ 'active ': i === arrowCounter }">
