@@ -1,5 +1,5 @@
 <template>
-    <div class="container p-0 no-gutters mb-3">
+    <div class="container p-0 no-gutters mb-1">
         <div class="col-12 p-0 mb-2">
             <LabelCloud class="w-100" v-on:labelClicked="labelClicked"></LabelCloud>
         </div>

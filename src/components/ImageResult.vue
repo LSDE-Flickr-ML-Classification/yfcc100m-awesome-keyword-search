@@ -2,8 +2,7 @@
     <div class="card image-card">
        <a :id="`popover-target-${get_id()}`" target="_blank" :href="get_flickr_url()">
            <div class="hover-container">
-                <img class="card-img-top-contain overlay" :src="get_image_url()">
-                <img class="card-img-top" :src="get_image_url()">
+               <LazyImage :imgsrc="get_image_url()"></LazyImage>
             </div>
         </a>
         <b-popover :target="`popover-target-${get_id()}`" triggers="hover" placement="top">
@@ -17,8 +16,13 @@
 </template>
 
 <script>
+    import LazyImage from "./LazyImage";
+
     export default {
         name: 'ImageResult',
+        components: {
+            LazyImage
+        },
         props: {
             data: Array,
             label_list: Array,
@@ -59,30 +63,7 @@
 </script>
 
 <style scoped>
-    .card-img-top {
-        width: 100%;
-        height: 15vw;
-        object-fit: cover;
-    }
-
-    .card-img-top-contain {
-        width: 100%;
-        height: 15vw;
-        object-fit: contain;
-    }
-    .overlay {
-        display: none;
-    }
-
     .image-card {
         width: 25%;
-    }
-    .hover-container:hover .overlay {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 0;
-        background: radial-gradient(transparent, #FFFFFF);
     }
 </style>
