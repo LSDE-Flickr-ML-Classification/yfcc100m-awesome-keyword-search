@@ -2,7 +2,7 @@
     <div class="lazy-image">
         <img v-if="!failed" v-bind:class=" loading ? 'd-none' : 'card-img-top-contain overlay' " @load="loaded" @error="handleError" :src="imgsrc">
         <img v-if="!failed" v-bind:class=" loading ? 'd-none' : 'card-img-top' " @load="loaded" :src="imgsrc">
-        <div v-if="failed">
+        <div v-if="failed" class="error-message">
             <div class="col-12 mt-auto">
                 This image has become unavailable 🥺
             </div>
@@ -50,6 +50,11 @@
     }
     .overlay {
         display: none;
+    }
+
+    .error-message {
+        height: 15vw;
+        font-size: 1vw;
     }
 
     .hover-container:hover .overlay {
