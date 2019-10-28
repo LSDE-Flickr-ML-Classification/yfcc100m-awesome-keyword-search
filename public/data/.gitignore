@@ -1,2 +1,2 @@
 *.json
-compressed/
+[0-9]*

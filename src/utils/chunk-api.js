@@ -22,7 +22,7 @@ export default class ChunkAPI {
     }
 
     async get (chunk_id) {
-        return await this._http.get(`data/compressed/${chunk_id}`, {
+        return await this._http.get(`data/${chunk_id}`, {
             responseType: 'arraybuffer'
         })
     }
