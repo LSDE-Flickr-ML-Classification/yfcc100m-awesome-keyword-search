@@ -22,8 +22,18 @@
     }
 </script>
 <style scoped>
-    @import url("https://fonts.googleapis.com/css?family=Roboto");
-    text {font-family: 'Roboto';
+
+    @font-face {
+        font-family: 'robotoregular';
+        src: url('/roboto-regular-webfont.woff2') format('woff2'),
+        url('/roboto-regular-webfont.woff') format('woff'),
+        url('/roboto-regular-webfont.ttf') format('truetype'),
+        url('/roboto-regular-webfont.svg#robotoregular') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    text {font-family: 'robotoregular';
         font-kerning:none;
         font-variant-ligatures:none}
 </style>
