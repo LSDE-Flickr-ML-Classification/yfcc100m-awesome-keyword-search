@@ -17,14 +17,14 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="row mb-1">
-                                    <div class="col-4 p-0 text-left">
+                                    <div class="col-4 col-sm-3 col-md-2 p-0 text-left">
                                         <div v-if="canLoadLess()" v-on:click="load_first" class="btn btn-sm btn-secondary"><span style='font-size: 1rem;'>&#8676;</span></div>
                                         <div v-if="canLoadLess()" v-on:click="load_less" class="btn btn-sm btn-secondary"><span style='font-size: 1rem;'>&larr;</span></div>
                                     </div>
-                                    <div class="col-4 text-center p-0">
+                                    <div class="col-4 col-sm-6 col-md-8 text-center p-0">
                                         <small v-if="!querying">Showing images {{ get_baseline() + page_begin() + 1}} to {{ get_baseline() + page_end()}} from  {{ get_total_image_count() }} - Page {{calculate_page_num()}} / {{ Math.ceil( get_total_image_count() / page_size) }} </small>
                                     </div>
-                                    <div class="col-4 p-0 text-right">
+                                    <div class="col-4 col-sm-3 col-md-2 p-0 text-right">
                                         <div v-if="canLoadMore()" v-on:click="load_more" class="btn btn-sm btn-secondary"><span style='font-size: 1rem;'>&rarr;</span></div>
                                         <div v-if="canLoadMore()" v-on:click="load_last" class="btn btn-sm btn-secondary text-b"><span style='font-size: 1rem;'>&#8677;</span></div>
                                     </div>
@@ -77,7 +77,7 @@
                 page_index: 0,
                 bucket_index: 0,
                 page_size: 100,
-                bucket_size: 10000,
+                bucket_size: 30000,
                 message: null,
                 querying: true
             }
