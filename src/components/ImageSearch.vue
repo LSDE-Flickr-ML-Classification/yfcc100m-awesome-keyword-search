@@ -72,7 +72,7 @@
                 available_keywords: [],
                 loaded_search_data: false,
                 current_keyword: null,
-                chunkApi: new ChunkAPI("/"),
+                chunkApi: new ChunkAPI("./"),
                 flickrImageItems: [],
                 page_index: 0,
                 bucket_index: 0,

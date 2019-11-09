@@ -2358,10 +2358,10 @@
 
     @font-face {
         font-family: 'robotoregular';
-        src: url('/roboto-regular-webfont.woff2') format('woff2'),
-        url('/roboto-regular-webfont.woff') format('woff'),
-        url('/roboto-regular-webfont.ttf') format('truetype'),
-        url('/roboto-regular-webfont.svg#robotoregular') format('svg');
+        src: url('~@/assets/fonts/roboto-regular-webfont.woff2') format('woff2'),
+        url('~@/assets/fonts/roboto-regular-webfont.woff') format('woff'),
+        url('~@/assets/fonts/roboto-regular-webfont.ttf') format('truetype'),
+        url('~@/assets/fonts/roboto-regular-webfont.svg#robotoregular') format('svg');
         font-weight: normal;
         font-style: normal;
     }
